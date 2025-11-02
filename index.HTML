@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stay Awake App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      color: #ecf0f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.5s ease;
+    }
+
+    .background-animation {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.3) 0%, transparent 50%);
+      animation: backgroundShift 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes backgroundShift {
+      0% {
+        transform: scale(1) rotate(0deg);
+      }
+
+      100% {
+        transform: scale(1.1) rotate(1deg);
+      }
+    }
+
+    .container {
+      background: rgba(44, 62, 80, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      max-width: 450px;
+      width: 90%;
+      position: relative;
+      z-index: 10;
+      animation: containerEnter 1s ease-out;
+    }
+
+    @keyframes containerEnter {
+      from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: #ecf0f1;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      animation: titleGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      from {
+        filter: brightness(1);
+      }
+
+      to {
+        filter: brightness(1.1);
+      }
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+      opacity: 0.8;
+      font-weight: 400;
+    }
+
+    .timer-container {
+      position: relative;
+      margin: 25px 0;
+      display: inline-block;
+    }
+
+    .progress-circle {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: conic-gradient(#e74c3c 0deg, #34495e 0deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 30px rgba(231, 76, 60, 0.3);
+      transition: all 1s ease;
+      position: relative;
+    }
+
+    .progress-circle::before {
+      content: '';
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: #2c3e50;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .timer {
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #e74c3c;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    input {
+      grid-column: 1 / -1;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 25px;
+      background: #34495e;
+      color: #ecf0f1;
+      font-size: 1rem;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+      transform: translateY(-2px);
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(231, 76, 60, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .settings-toggle {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: rgba(44, 62, 80, 0.9);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .settings-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .sound-toggle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: rgba(44, 62, 80, 0.9);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .sound-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .settings-panel {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(44, 62, 80, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 15px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: none;
+      z-index: 20;
+      min-width: 180px;
+      max-width: 90%;
+    }
+
+    .settings-panel.show {
+      display: block;
+      animation: panelSlide 0.3s ease-out;
+    }
+
+    @keyframes panelSlide {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .settings-panel h3 {
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      color: #ecf0f1;
+    }
+
+    .settings-panel label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+
+    .settings-panel input[type="range"] {
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px 15px;
+        max-width: 95%;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      .progress-circle {
+        width: 180px;
+        height: 180px;
+      }
+
+      .progress-circle::before {
+        width: 150px;
+        height: 150px;
+      }
+
+      .timer {
+        font-size: 1.8rem;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      button {
+        padding: 10px 15px;
+        font-size: 0.85rem;
+      }
+
+      input {
+        padding: 10px 12px;
+      }
+
+      .sound-toggle,
+      .settings-toggle {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="particles" id="particles"></div>
+  <div class="background-animation"></div>
+  <div class="container">
+    <button class="settings-toggle" onclick="toggleSettings()" title="Settings">
+      <i class="fas fa-cog"></i>
+    </button>
+    <div class="settings-panel" id="settingsPanel">
+      <h3>Settings</h3>
+      <label>
+        <input type="checkbox" id="soundEnabled" checked> Enable Sound
+      </label>
+      <label>
+        Volume: <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+      </label>
+      <label>
+        <input type="checkbox" id="mouseResetEnabled" checked> Mouse Reset
+      </label>
+    </div>
+    <div class="sound-toggle" onclick="toggleSound()" title="Toggle Sound">
+      <i class="fas fa-volume-up" id="soundIcon"></i>
+    </div>
+    <B>
+      <h1>Stay Awake App</h1>
+    </B>
+    <h4>Developed by Aadhish</h4>
+    <p id="status">Click <b>Start</b> to begin tracking.</p>
+
+    <div class="timer-container">
+      <div class="progress-circle" id="progressCircle"></div>
+      <div class="timer" id="timer">--:--</div>
+    </div>
+
+    <div class="controls">
+      <input type="number" id="interval" placeholder="Set time (minutes)" min="1">
+      <button onclick="startTracking()" id="startBtn">
+        <i class="fas fa-play"></i> Start
+      </button>
+      <button onclick="pauseResumeTracking()" id="pauseBtn" style="display: none;">
+        <i class="fas fa-pause"></i> Pause
+      </button>
+      <button onclick="stopTracking()" id="stopBtn">
+        <i class="fas fa-stop"></i> Stop
+      </button>
+      <button onclick="resetTracking()" id="resetBtn">
+        <i class="fas fa-redo"></i> Reset
+      </button>
+    </div>
+
+    <audio id="alarm" src="alarm.mp3"></audio>
+  </div>
+
+
+  <script>
+    let timerInterval;
+    let remainingTime = 0;
+    let totalTime = 0;
+    let isPaused = false;
+    let soundEnabled = true;
+
+    function startTracking() {
+      const minutes = parseInt(document.getElementById('interval').value);
+      if (isNaN(minutes) || minutes <= 0) {
+        alert("Please enter a valid time.");
+        return;
+      }
+
+      totalTime = minutes * 60;
+      remainingTime = totalTime;
+      isPaused = false;
+      document.getElementById('status').textContent = "Timer started...";
+      updateTimer();
+      updateProgress();
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (!isPaused) {
+          remainingTime--;
+          updateTimer();
+          updateProgress();
+
+          if (remainingTime <= 0) {
+            clearInterval(timerInterval);
+            if (soundEnabled) document.getElementById('alarm').play();
+            document.getElementById('status').textContent = "⏰ Time's up!";
+            document.getElementById('startBtn').style.display = 'inline-flex';
+            document.getElementById('pauseBtn').style.display = 'none';
+          }
+        }
+      }, 1000);
+
+      document.getElementById('startBtn').style.display = 'none';
+      document.getElementById('pauseBtn').style.display = 'inline-flex';
+    }
+
+    function pauseResumeTracking() {
+      isPaused = !isPaused;
+      const pauseBtn = document.getElementById('pauseBtn');
+      const icon = pauseBtn.querySelector('i');
+      if (isPaused) {
+        pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+        document.getElementById('status').textContent = "Timer paused.";
+      } else {
+        pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+        document.getElementById('status').textContent = "Timer resumed...";
+      }
+    }
+
+    function stopTracking() {
+      clearInterval(timerInterval);
+      isPaused = false;
+      document.getElementById('status').textContent = "Timer stopped.";
+      document.getElementById('startBtn').style.display = 'inline-flex';
+      document.getElementById('pauseBtn').style.display = 'none';
+      document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+    }
+
+    function resetTracking() {
+      clearInterval(timerInterval);
+      remainingTime = 0;
+      totalTime = 0;
+      isPaused = false;
+      document.getElementById('timer').textContent = '--:--';
+      document.getElementById('status').textContent = "Timer reset. Click <b>Start</b> to begin tracking.";
+      document.getElementById('progressCircle').style.background = 'conic-gradient(#e74c3c 0deg, #34495e 0deg)';
+      document.getElementById('startBtn').style.display = 'inline-flex';
+      document.getElementById('pauseBtn').style.display = 'none';
+      document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+    }
+
+    function updateTimer() {
+      const min = Math.floor(remainingTime / 60);
+      const sec = remainingTime % 60;
+      document.getElementById('timer').textContent =
+        `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function updateProgress() {
+      const progress = ((totalTime - remainingTime) / totalTime) * 360;
+      document.getElementById('progressCircle').style.background = `conic-gradient(#e74c3c ${progress}deg, #34495e ${progress}deg)`;
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      icon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+      document.getElementById('soundEnabled').checked = soundEnabled;
+    }
+
+    function toggleSettings() {
+      const panel = document.getElementById('settingsPanel');
+      panel.classList.toggle('show');
+    }
+
+    // Initialize settings
+    document.getElementById('soundEnabled').addEventListener('change', (e) => {
+      soundEnabled = e.target.checked;
+      const icon = document.getElementById('soundIcon');
+      icon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+    });
+
+    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+      document.getElementById('alarm').volume = e.target.value;
+    });
+
+    let mouseResetEnabled = true;
+    document.getElementById('mouseResetEnabled').addEventListener('change', (e) => {
+      mouseResetEnabled = e.target.checked;
+    });
+
+    // Create particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.width = Math.random() * 6 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    createParticles();
+
+    // Reset timer when mouse moves
+    document.addEventListener('mousemove', () => {
+      if (totalTime > 0 && !isPaused && mouseResetEnabled) {
+        remainingTime = totalTime;
+        updateTimer();
+        updateProgress();
+        document.body.classList.add('active');
+        document.getElementById('status').textContent = "Mouse moved — timer reset!";
+        setTimeout(() => document.body.classList.remove('active'), 400);
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ') {
+        e.preventDefault();
+        if (document.getElementById('startBtn').style.display !== 'none') {
+          startTracking();
+        } else {
+          pauseResumeTracking();
+        }
+      } else if (e.key === 'Escape') {
+        stopTracking();
+      } else if (e.key === 'r' && e.ctrlKey) {
+        e.preventDefault();
+        resetTracking();
+      }
+    });
+  </script>
+</body>
+
+</html>
